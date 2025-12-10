@@ -51,9 +51,9 @@ and a "bar" field in the upper 8 bits.
     def __int__(self):
         word = 0
         for name, width in reversed(self._fields_):
+            word <<= width
             if name:
                 word |= getattr(self, name)
-            word <<= width
         return word
 
     def encode(self) -> bytes:
@@ -660,7 +660,7 @@ class VtiVrtPacket(): # pylint: disable=too-many-instance-attributes
         header.tsi = int(self.tsi) # pylint: disable=attribute-defined-outside-init
         header.has_trailer = self.trailer is not None # pylint: disable=attribute-defined-outside-init
         header.count = self.count # pylint: disable=attribute-defined-outside-init
-        header.size = len(self.data) # pylint: disable=attribute-defined-outside-init
+        header.size = len(self.data)+2 # pylint: disable=attribute-defined-outside-init
         if header.has_class:
             header.size += 2
         if self.tsi != VrtTimestampInteger.NONE:
